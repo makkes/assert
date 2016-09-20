@@ -1,5 +1,7 @@
 # Assert
 
+[![GoDoc](https://godoc.org/github.com/justsocialapps/assert?status.svg)](https://godoc.org/github.com/justsocialapps/assert)
+
 Assertion library for Golang
 
 # License
