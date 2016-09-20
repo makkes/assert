@@ -1,3 +1,12 @@
+// Package assert contains an assertion library, providing methods to e.g.
+// assert equality of expected and actual values. This makes your unit tests
+// much more readable.
+//
+// To use it, create an Assert object and call its methods for assertion:
+//
+//	asrt := NewAssert(t)
+//	actual := myTestCall()
+//	asrt.Equal(actual, "expected", "Got unexpected value from myTestCall()")
 package assert
 
 import (
@@ -5,20 +14,47 @@ import (
 	"testing"
 )
 
+// Assert wraps a testing.T pointer for storing failures.
 type Assert struct {
 	t *testing.T
 }
 
+// NewAssert returns a
 func NewAssert(t *testing.T) *Assert {
 	return &Assert{t}
 }
 
+// Equal asserts that actual and expected are identical. It does not assert
+// deep equality.
 func (a *Assert) Equal(actual interface{}, expected interface{}, msg string) {
 	if actual != expected {
 		a.t.Errorf("%s, actual: '%v', expected: '%v'", msg, actual, expected)
 	}
 }
 
+// EqualSlice asserts that the two given slices are equal, i.e. they have the
+// same size and contain the same elements, doing a shallow compare of the
+// elements.
+func (a *Assert) EqualSlice(actual []interface{}, expected []interface{}, msg string) {
+	if actual == nil && expected != nil || actual != nil && expected == nil {
+		a.t.Errorf("%s, actual: '%v', expected: '%v'", msg, actual, expected)
+		return
+	}
+
+	if len(actual) != len(expected) {
+		a.t.Errorf("%s, lengths differ. Actual: '%d', expected: '%d'", msg, len(actual), len(expected))
+		return
+	}
+
+	for idx, elem := range actual {
+		if elem != expected[idx] {
+			a.t.Errorf("%s, slice content differs. Actual: '%v', expected: '%v'", msg, actual, expected)
+			return
+		}
+	}
+}
+
+// Match asserts that target matches pattern using a regular expression.
 func (a *Assert) Match(pattern string, target string, msg string) {
 	match, err := regexp.MatchString(pattern, target)
 	if !match || err != nil {
