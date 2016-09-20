@@ -19,7 +19,7 @@ type Assert struct {
 	t *testing.T
 }
 
-// NewAssert returns a
+// NewAssert returns an Assert type that wraps t.
 func NewAssert(t *testing.T) *Assert {
 	return &Assert{t}
 }
