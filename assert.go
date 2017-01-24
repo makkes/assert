@@ -10,6 +10,7 @@
 package assert
 
 import (
+	"reflect"
 	"regexp"
 	"testing"
 )
@@ -22,6 +23,32 @@ type Assert struct {
 // NewAssert returns an Assert type that wraps t.
 func NewAssert(t *testing.T) *Assert {
 	return &Assert{t}
+}
+
+func isNil(i interface{}) bool {
+	if i == nil {
+		return true
+	}
+	value := reflect.ValueOf(i)
+	kind := value.Kind()
+	if kind >= reflect.Chan && kind <= reflect.Slice && value.IsNil() {
+		return true
+	}
+	return false
+}
+
+// Nil asserts that actual is nil.
+func (a *Assert) Nil(actual interface{}, msg string) {
+	if !isNil(actual) {
+		a.t.Error(msg)
+	}
+}
+
+// NotNil asserts that actual is not nil.
+func (a *Assert) NotNil(actual interface{}, msg string) {
+	if isNil(actual) {
+		a.t.Error(msg)
+	}
 }
 
 // Equal asserts that actual and expected are identical. It does not assert
