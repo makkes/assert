@@ -37,10 +37,22 @@ func isNil(i interface{}) bool {
 	return false
 }
 
+func (a *Assert) False(val interface{}, msg string) {
+	if val != false {
+		a.t.Error(msg)
+	}
+}
+
+func (a *Assert) True(val interface{}, msg string) {
+	if val != true {
+		a.t.Error(msg)
+	}
+}
+
 // Nil asserts that actual is nil.
 func (a *Assert) Nil(actual interface{}, msg string) {
 	if !isNil(actual) {
-		a.t.Error(msg)
+		a.t.Errorf("%s, actual: %v", msg, actual)
 	}
 }
 
