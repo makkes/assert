@@ -17,12 +17,18 @@ import (
 
 // Assert wraps a testing.T pointer for storing failures.
 type Assert struct {
-	t *testing.T
+	error  func(...interface{})
+	errorf func(string, ...interface{})
+	t      *testing.T
 }
 
 // NewAssert returns an Assert type that wraps t.
 func NewAssert(t *testing.T) *Assert {
-	return &Assert{t}
+	return &Assert{t.Error, t.Errorf, t}
+}
+
+func NewStrict(t *testing.T) *Assert {
+	return &Assert{t.Fatal, t.Fatalf, t}
 }
 
 func isNil(i interface{}) bool {
@@ -52,7 +58,7 @@ func (a *Assert) True(val interface{}, msg string) {
 // Nil asserts that actual is nil.
 func (a *Assert) Nil(actual interface{}, msg string) {
 	if !isNil(actual) {
-		a.t.Errorf("%s, actual: %v", msg, actual)
+		a.errorf("%s, actual: %v", msg, actual)
 	}
 }
 
